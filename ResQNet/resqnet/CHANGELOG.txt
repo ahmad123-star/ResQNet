@@ -1,0 +1,133 @@
+ResQNet Changelog
+
+v0 - Project setup
+
+v1 - Design system
+- Theme: red + white tokens as Tailwind v4 @theme vars + CSS variables in app/globals.css
+  (primary/hover/light, surfaces, borders, text, status colours with accessible text variants).
+- Inter font via next/font; app-wide Providers (MotionConfig reduced-motion + ToastProvider).
+- Reusable UI components in components/ui/: Button, Card, Input, Label, Select, Textarea,
+  Checkbox, Tabs, Avatar, Dropdown, Tooltip, StatusBadge, Modal/Dialog, Toast, Table
+  (responsive -> stacked cards), Spinner, Skeleton (shimmer), EmptyState, LoadingScreen
+  (branded pulsing heartbeat splash).
+- Helpers: lib/utils.js (cn), lib/motion.js (Framer Motion presets), lib/useHydrated.js.
+- /styleguide page showcasing every component, colour and status badge.
+
+v2 - App shell / navigation
+- Role-aware nav config (lib/navConfig.js) for victim / volunteer / ngo / admin / donor.
+- ShellContext (lib/shellContext.js): role, collapsed, drawerOpen, lang state shared across shell.
+- Sidebar (components/shell/Sidebar.js): fixed left, collapsible to icon-rail, active-red highlight,
+  tooltips in rail mode, animated width. Desktop: expanded. Tablet: rail default.
+- Header (components/shell/Header.js): fixed top bar, hamburger (mobile), emergency status pill
+  with pulsing dot, notifications bell, language switcher, user avatar+dropdown.
+  TEMP role switcher included — remove when auth is wired.
+- MobileDrawer (components/shell/MobileDrawer.js): slide-in nav overlay, staggered item entrance.
+- BottomNav (components/shell/BottomNav.js): 4-item fixed mobile bottom bar + role SOS button.
+- AppShell + PageTransition: sidebar-offset content area, fade/slide on route change.
+- app/(shell)/layout.js: route group that applies the shell to all logged-in pages.
+- app/loading.js: branded LoadingScreen shown during page loads.
+- /preview page for shell testing across breakpoints.
+
+v3 - Public & auth pages
+- app/(public)/ route group: PublicNav top bar + shared layout (no sidebar).
+- / Home: hero with animated headline + CTAs, stats strip, features strip, "How it works"
+  role cards (victim/volunteer/NGO/donor), CTA banner, footer.
+- /login: email + password, loading state, forgot-password link, register link.
+- /register: full form (name, email, phone, password, role selector, location, terms),
+  client-side validation, role hint text, pre-selects role from ?role= query param.
+- /forgot-password: email field + success state (animated transition to confirmation card).
+- /reset-password: new + confirm password, mismatch validation, success state.
+- /verify-email: animated envelope, resend button with loading + confirmation states.
+- Shared AuthCard component (components/public/AuthCard.js).
+
+v4 - Victim pages
+- Updated victim navConfig hrefs to /victim/... prefix.
+- lib/data/victimData.js: all dummy data (categories, severities, stats, activity, emergencies).
+- /victim/dashboard: stat cards (active, resolved, nearby), pulsing red Report Emergency CTA
+  banner, Recent Activity list with StatusBadges.
+- /victim/report: multi-card form (category + preview pill, description with char count, severity
+  radio cards, location with grid-overlay map placeholder, GPS detect button), success screen.
+- /victim/my-emergencies: Active/Resolved/All filter tabs, 1.2 s skeleton on load, staggered
+  emergency cards (severity top band, category + severity chips, StatusBadge, 3-step animated
+  timeline with pulsing current-step indicator), EmptyState per empty filter, links to detail.
+
+v5 - Volunteer pages
+- Updated volunteer navConfig hrefs to /volunteer/... prefix; shell CURRENT_ROLE set to "volunteer".
+- lib/data/volunteerData.js: stats, nearby emergencies (with distance_km), tasks, status configs.
+- /volunteer/dashboard: 3 stat cards, animated availability toggle (Available/Unavailable) with
+  toast feedback, nearby emergencies CTA banner, quick-link cards to Nearby and My Tasks.
+- /volunteer/nearby: distance filter chips (2/5/10 km/All), staggered emergency cards (severity
+  band, category chip, distance badge coloured by proximity, severity StatusBadge, Accept button
+  with loading state), accepted state with checkmark, sticky map placeholder with animated pins.
+  Two-column on desktop (list left, map right), stacked on mobile.
+- /volunteer/my-tasks: 1.1 s skeleton on load, tasks split into Active/Completed sections,
+  each card shows category, severity, meta, optional notes, 3-step status stepper, and an
+  "advance status" button (Accepted→In Progress→Completed) that updates local state.
+  EmptyState with link to Nearby when no tasks exist.
+
+v6 - NGO pages
+- Updated NGO navConfig hrefs to /ngo/... prefix; shell CURRENT_ROLE set to "ngo".
+- lib/data/ngoData.js: KPIs, requests, resources, volunteers, reports data, all status configs.
+- /ngo/dashboard: 4 KPI cards, 2 chart placeholder boxes (category + status), 4 quick-link cards.
+- /ngo/requests: search input + status filter chips, desktop table + mobile stacked cards,
+  colour-coded severity band, View and Assign action links per row.
+- /ngo/resources: desktop table + mobile cards; Add/Edit open animated Modal with form
+  (name, category, quantity, unit, status); Delete opens confirm Modal; full local state CRUD.
+- /ngo/assign: custom emergency dropdown with category + severity preview, volunteer grid cards
+  (skill chips, task count, available/unavailable state, multi-select), confirmation success screen.
+  Pre-selects emergency from ?id= query param (linked from Requests page).
+- /ngo/manage: split two-column layout — scrollable request picker left, update form right;
+  3-step status tracker, status dropdown, notes textarea, inline save confirmation.
+  Pre-selects from ?id= query param.
+- /ngo/reports: 4 summary stat cards, 3 chart placeholder boxes, recent reports list each with
+  per-row Export button (loading state + toast), Export All button.
+
+v7 - Admin pages
+- Updated admin navConfig hrefs to /admin/... prefix; shell CURRENT_ROLE set to "admin".
+- lib/data/adminData.js: KPIs, system checks, users, categories, donations, logs, reports,
+  notification events/channels, performance metrics.
+- /admin/dashboard: 4 KPI cards, 2 chart placeholders, System Status panel (all-green checks),
+  4 quick-link cards.
+- /admin/users: search input, desktop table + mobile cards; Block/Unblock toggle per user
+  with visual strikethrough and toast feedback; state updates instantly.
+- /admin/categories: desktop table + mobile cards; Add/Edit via animated Modal (icon, name,
+  description, active checkbox); inline active/inactive toggle; Delete confirm Modal.
+- /admin/donations: search + multi-filter chips (type + status); desktop table + mobile cards;
+  monetary vs in-kind type badges; status StatusBadges.
+- /admin/logs: monospace log list with timestamp, user, action; level filter chips (Info/Warn/Error);
+  search; row colour-tinted by level; Refresh button with loading state + toast.
+- /admin/reports: 4 summary stat cards, 3 chart placeholders, recent reports list with per-row
+  Export button and Export All; all loading states + toasts.
+- /admin/notifications-config: per-event enable toggles with per-channel (In-app/Email/SMS)
+  sub-toggles shown inline; global channel master switches; Save with inline confirmation.
+- /admin/performance: 4 metric cards (uptime, response time, sessions, error rate) with trend
+  arrows; 2 chart placeholders; API endpoint health table with animated latency bars.
+
+v8 - Donor pages
+- Updated donor navConfig hrefs to /donor/... prefix; shell CURRENT_ROLE set to "donor".
+- lib/data/donorData.js: stats, donation history, target NGOs/emergencies, suggested amounts.
+- /donor/dashboard: 3 stat cards (Total Donated, Active Contributions, People Helped); red CTA
+  banner linking to donate page; in-progress alert strip when contributions are processing;
+  full donation history list with type icon (Coins/Package), target, impact line, StatusBadge.
+- /donor/donate: multi-step card form — type toggle (Funds vs Items, animated swap); Funds shows
+  quick-select amount chips + custom input; Items shows item description + quantity; target type
+  tabs (General / NGO / Emergency) with animated dropdown; optional notes; submit banner shows
+  live donation summary. Prominent info banner at top and on success screen stating no real
+  payment is processed. Success screen with thank-you card and link to dashboard.
+
+v9 - Shared pages (profile, notifications, emergency detail)
+- lib/data/sharedData.js: demo profiles per role, notification prefs, notifications list,
+  emergency detail fixture, role-aware action button configs.
+- /profile: avatar + role/verified badges; editable name/email/phone/location form; change
+  password section with show/hide toggles and strength bar; notification prefs toggle group;
+  each section has its own Save with loading state + inline "Saved ✓" confirmation + toast.
+  Profile fields pre-filled per role from DEMO_PROFILES.
+- /notifications: 1s skeleton on load; staggered list with type icon (emergency/task/resolved/
+  donation/system), unread dot, per-item mark-as-read button; "Mark all as read" header button;
+  all-caught-up footer strip; EmptyState if empty.
+- /emergency/[id]: dynamic route — page.js (Server Component) awaits params, passes id to
+  EmergencyDetail.js (Client Component). Shows category/severity/status badges, description,
+  meta grid, field notes, pulsing-pin map placeholder, status timeline with animated current-step.
+  Role-aware action panel: victim (track/share) | volunteer (accept/navigate/update + task status
+  selector) | ngo (assign/update/deploy) | admin (manage/logs/delete with confirm modal) |
+  donor (donate/share). All actions fire loading states + contextual toasts.

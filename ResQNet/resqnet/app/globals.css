@@ -1,0 +1,149 @@
+@import "tailwindcss";
+
+/*
+  ResQNet Design System
+  ---------------------
+  Theme: RED + WHITE. Red is used purposefully for brand, primary/critical
+  actions and emergency status; everything else sits on white/light-grey
+  surfaces. Calm-but-urgent, trustworthy, polished — not flashy.
+
+  Colours are declared once here as Tailwind v4 theme tokens (inside @theme),
+  which ALSO emits them as CSS custom properties on :root. So you can use
+  either `bg-primary` (utility) or `var(--color-primary)` (raw CSS).
+*/
+
+@theme {
+  /* ---- Brand / primary red ---- */
+  --color-primary: #c81e1e; /* brand + primary/critical actions */
+  --color-primary-hover: #991b1b; /* hover / pressed */
+  --color-primary-light: #fceaea; /* subtle red tint background */
+
+  /* ---- Surfaces ---- */
+  --color-background: #f8fafc; /* app/page background */
+  --color-surface: #ffffff; /* cards, sheets, inputs */
+  --color-border: #e2e8f0; /* hairline borders */
+
+  /* ---- Text ---- */
+  --color-text: #0f172a; /* primary text */
+  --color-text-secondary: #64748b; /* secondary / muted text */
+
+  /* ---- Status (solid) ---- */
+  --color-critical: #c81e1e; /* emergency / critical */
+  --color-pending: #f59e0b; /* pending / in-progress */
+  --color-resolved: #16a34a; /* resolved / success */
+  --color-info: #2563eb; /* info */
+
+  /* ---- Status (accessible text-on-white variants) ---- */
+  /* Darkened so coloured text clears WCAG AA on white surfaces. */
+  --color-critical-strong: #991b1b;
+  --color-pending-strong: #b45309;
+  --color-resolved-strong: #15803d;
+  --color-info-strong: #1d4ed8;
+
+  /* ---- Status (light tint backgrounds for pills/banners) ---- */
+  --color-critical-light: #fceaea;
+  --color-pending-light: #fef3c7;
+  --color-resolved-light: #dcfce7;
+  --color-info-light: #dbeafe;
+
+  /* ---- Typography ---- */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, Arial, sans-serif;
+
+  /* Type scale (clear, slightly tightened headings) */
+  --text-xs: 0.75rem; /* 12 */
+  --text-sm: 0.875rem; /* 14 */
+  --text-base: 1rem; /* 16 */
+  --text-lg: 1.125rem; /* 18 */
+  --text-xl: 1.25rem; /* 20 */
+  --text-2xl: 1.5rem; /* 24 */
+  --text-3xl: 1.875rem; /* 30 */
+  --text-4xl: 2.25rem; /* 36 */
+  --text-5xl: 3rem; /* 48 */
+
+  /* ---- Radii: rounded-xl as the house default ---- */
+  --radius-xl: 0.875rem;
+  --radius-2xl: 1.125rem;
+
+  /* ---- Soft, subtle shadows ---- */
+  --shadow-sm: 0 1px 2px 0 rgb(15 23 42 / 0.04);
+  --shadow-md: 0 2px 8px -2px rgb(15 23 42 / 0.08),
+    0 4px 16px -4px rgb(15 23 42 / 0.06);
+  --shadow-lg: 0 8px 24px -6px rgb(15 23 42 / 0.12),
+    0 16px 40px -8px rgb(15 23 42 / 0.10);
+}
+
+/* ---- Base layer ---- */
+@layer base {
+  html {
+    /* smoother large-screen rhythm */
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--color-background);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-feature-settings: "cv11", "ss01";
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Visible, on-brand focus ring for keyboard users everywhere. */
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+/* ---- Keyframes ---- */
+
+/* Skeleton shimmer — a soft light sweep across a grey block. */
+@keyframes resq-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Heartbeat ring for the branded LoadingScreen (CSS fallback; the
+   component also drives this with Framer Motion). */
+@keyframes resq-heartbeat {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.12);
+    opacity: 0.45;
+  }
+}
+
+@utility animate-shimmer {
+  background-image: linear-gradient(
+    90deg,
+    #eef2f6 0%,
+    #f8fafc 50%,
+    #eef2f6 100%
+  );
+  background-size: 200% 100%;
+  animation: resq-shimmer 1.4s ease-in-out infinite;
+}
+
+/* Respect users who prefer reduced motion: kill non-essential animation.
+   Framer Motion components additionally honour this via MotionConfig. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
